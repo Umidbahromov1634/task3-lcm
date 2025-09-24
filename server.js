@@ -22,6 +22,12 @@ app.get("/:email", (req, res) => {
   }
 
   const { x, y } = req.query;
+
+  // если параметры отсутствуют
+  if (x === undefined || y === undefined) {
+    return res.send("NaN");
+  }
+
   const a = parseInt(x, 10);
   const b = parseInt(y, 10);
 
@@ -49,20 +55,10 @@ app.get("/:email", (req, res) => {
   return res.send(String(lcm(a, b)));
 });
 
-// Без параметров → NaN
-app.get("/:email", (req, res) => {
-  const email = req.params.email;
-
-  if (email !== ROUTE_EMAIL) {
-    return res.status(404).send("Not Found");
-  }
-
-  res.send("NaN");
-});
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
