@@ -4,14 +4,18 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 const ROUTE_EMAIL = process.env.ROUTE_EMAIL || "umidbahromov24_gmail_com";
 
-// НОД
+// НОД через BigInt
 function gcd(a, b) {
-  return b === 0 ? a : gcd(b, a % b);
+  a = BigInt(a);
+  b = BigInt(b);
+  return b === 0n ? a : gcd(b, a % b);
 }
 
-// НОК
+// НОК через BigInt
 function lcm(a, b) {
-  return Math.abs(a * b) / gcd(a, b);
+  a = BigInt(a);
+  b = BigInt(b);
+  return (a * b) / gcd(a, b);
 }
 
 app.get("/:email", (req, res) => {
@@ -23,41 +27,36 @@ app.get("/:email", (req, res) => {
 
   const { x, y } = req.query;
 
-  // если параметры отсутствуют
+  // Если параметры отсутствуют
   if (x === undefined || y === undefined) {
     return res.send("NaN");
   }
 
-  const a = parseInt(x, 10);
-  const b = parseInt(y, 10);
-
-  // Если не числа
-  if (isNaN(a) || isNaN(b)) {
+  let a, b;
+  try {
+    a = BigInt(x);
+    b = BigInt(y);
+  } catch {
     return res.send("NaN");
   }
 
   // Оба нуля
-  if (a === 0 && b === 0) {
-    return res.send("NaN");
-  }
+  if (a === 0n && b === 0n) return res.send("NaN");
 
   // Один ноль, другой > 0
-  if ((a === 0 && b > 0) || (b === 0 && a > 0)) {
-    return res.send("0");
-  }
+  if ((a === 0n && b > 0n) || (b === 0n && a > 0n)) return res.send("0");
 
   // Если отрицательные
-  if (a < 0 || b < 0) {
-    return res.send("NaN");
-  }
+  if (a < 0n || b < 0n) return res.send("NaN");
 
-  // Оба > 0 → обычный расчёт НОК
-  return res.send(String(lcm(a, b)));
+  // Обычный расчёт НОК
+  return res.send(lcm(a, b).toString());
 });
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
